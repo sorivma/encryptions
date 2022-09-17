@@ -62,6 +62,13 @@ def main_func(encryption_fun, decryption_fun, test, info):
         elif command == "-al":
             print(alphabet)
 
+        elif command == "-numbers":
+            for letter in alphabet:
+                print(letter, alphabet.index(letter))
+
+        elif command == "-al sep":
+            print(" ".join(letter for letter in k_alphabet))
+
         else:
             print("""
         NO SUCH COMMAND

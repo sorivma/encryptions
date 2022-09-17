@@ -26,10 +26,10 @@ def decrypt(message, alphabet, shift):
 
 
 def test():
-    encryption = encrypt(TEST_MESSAGE, k_alphabet, 3)
+    encryption = encrypt(TEST_MESSAGE, k_alphabet, 5)
     print(f"Encryption {encryption}")
 
-    decryption = decrypt(encryption, k_alphabet, 3)
+    decryption = decrypt(encryption, k_alphabet, 5)
     print(f"Decryption {decryption}")
 
 
