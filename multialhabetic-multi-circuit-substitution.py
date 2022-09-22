@@ -7,27 +7,31 @@ second symbol will be cyphered with the second circuit"""
 TEST_MESSAGE = "Однонаправленная функция –это основное понятие в криптографии с открытым ключом."
 
 
-def encrypt(message: str, alphabet: str, seed: int, second_alphabet=l_alphabet):
-    counter = int(seed)
+def encrypt(message: str, alphabet: str, seed: int):
+    counter_first_circuit = int(seed)
+    counter_second_circuit = int(seed)
     encryption = ""
     for letter in message:
         if message.index(letter) % 2 == 0:
-            encryption += alphabet[(alphabet.index(letter) + counter) % len(alphabet)]
+            encryption += alphabet[(alphabet.index(letter) + counter_first_circuit) % len(alphabet)]
+            counter_first_circuit += 1
         else:
-            encryption += second_alphabet[(alphabet.index(letter) + counter) % len(second_alphabet)]
-        seed *= 2
+            encryption += alphabet[(alphabet.index(letter) + counter_second_circuit) % len(alphabet)]
+            counter_second_circuit *= 2
     return encryption
 
 
-def decrypt(message: str, alphabet: str, seed: int, second_alphabet=l_alphabet):
-    counter = int(seed)
+def decrypt(message: str, alphabet: str, seed: int):
+    counter_first_circuit = int(seed)
+    counter_second_circuit = int(seed)
     decryption = ""
     for letter in message:
         if message.index(letter) % 2 == 0:
-            decryption += alphabet[(alphabet.index(letter) - counter) % len(alphabet)]
+            decryption += alphabet[(alphabet.index(letter) - counter_first_circuit) % len(alphabet)]
+            counter_first_circuit += 1
         else:
-            decryption += alphabet[(second_alphabet.index(letter) - counter) % len(second_alphabet)]
-        seed *= 2
+            decryption += alphabet[(alphabet.index(letter) - counter_second_circuit) % len(alphabet)]
+            counter_second_circuit *= 2
     return decryption
 
 

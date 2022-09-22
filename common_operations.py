@@ -20,7 +20,7 @@ def main_func(encryption_fun, decryption_fun, test, info):
             -try stands for encrypting and decrypting a message
             -stop stands for stopping an application
             -ca stands for changing an alphabet
-            -ra stands for changing an alphabet back to default
+            -ra sta nds for changing an alphabet back to default
             -info stands for brief cipher info
             -test initializes test case
             -al stands for showing current alphabet
