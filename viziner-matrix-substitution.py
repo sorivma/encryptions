@@ -1,5 +1,5 @@
 from alphabets import k_alphabet
-from common_operations import main_func
+from main import main_func
 
 INFO = """
     //WORK IN PROGRESS//

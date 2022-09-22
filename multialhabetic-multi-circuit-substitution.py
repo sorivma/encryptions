@@ -1,4 +1,4 @@
-from common_operations import *
+from main import *
 
 INFO = """Several values can correspond to one letter in this cipher. 
 The key for this cipher is a positive integer and every 

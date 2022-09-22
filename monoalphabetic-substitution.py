@@ -1,4 +1,4 @@
-from common_operations import *
+from main import *
 
 INFO = """
 An example of a one-letter substitution is the Caesar cipher. 

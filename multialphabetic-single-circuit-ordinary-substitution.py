@@ -1,4 +1,4 @@
-from common_operations import *
+from main import *
 
 INFO = """
 Unlike the Caesar cipher, 
