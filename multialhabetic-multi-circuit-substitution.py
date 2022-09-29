@@ -1,5 +1,7 @@
 from main import *
 from prettytable import PrettyTable
+from utils import shift_alphabet
+
 
 INFO = """Several values can correspond to one letter in this cipher. 
 The key for this cipher is a positive integer and every 
@@ -19,6 +21,17 @@ def encrypt(message: str, alphabet: str, seed: int):
     counter_first_circuit = int(seed)
     counter_second_circuit = int(seed)
     encryption = ""
+    first_circuit = PrettyTable()
+    second_circuit = PrettyTable()
+    first_circuit.add_row(alphabet)
+    second_circuit.add_row(alphabet)
+    field_names = [str(i) for i in range(len(alphabet))]
+    first_circuit.title = "Таблица замены первого контура"
+    second_circuit.title = "Таблица замены второго контура"
+    first_circuit.field_names = field_names
+    second_circuit.field_names = field_names
+    check_1_circuit = []
+    check_2_circuit = []
 
     for letter in message:
         if letter_index % 2 == 0:
@@ -29,6 +42,10 @@ def encrypt(message: str, alphabet: str, seed: int):
                            "НЕТ",
                            alphabet[(alphabet.index(letter) + counter_first_circuit) % len(alphabet)],
                            ])
+            row = shift_alphabet(alphabet, counter_first_circuit)
+            if row[0] not in check_1_circuit:
+                first_circuit.add_row(row)
+                check_1_circuit.append(row[0])
         else:
             encryption += alphabet[(alphabet.index(letter) + counter_second_circuit) % len(alphabet)]
             table.add_row([letter, message.index(letter),
@@ -36,12 +53,18 @@ def encrypt(message: str, alphabet: str, seed: int):
                            "НЕТ",
                            (alphabet.index(letter) + counter_second_circuit) % len(alphabet),
                            alphabet[(alphabet.index(letter) + counter_second_circuit) % len(alphabet)]])
-
+            row = shift_alphabet(alphabet, counter_second_circuit)
+            if row[0] not in check_2_circuit:
+                second_circuit.add_row(row)
+                check_2_circuit.append(row[0])
         counter_first_circuit *= 2
         counter_second_circuit += counter_second_circuit
         letter_index += 1
 
+    print(first_circuit)
+    print(second_circuit)
     print(table)
+
     return encryption
 
 
