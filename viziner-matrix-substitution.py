@@ -4,7 +4,8 @@ from utils import shift_alphabet
 from prettytable import PrettyTable
 
 INFO = """
-    //WORK IN PROGRESS//
+Данный шифр заменяет каждый символ открытого текста, соответствующим символом алфавита замены, 
+определяемому по символа ключа, символы ключа перебираются циклически. 
 """
 
 TEST_MESSAGE = "Никакой транспорт не будет попутным, если не знаешь, куда идти."
@@ -39,10 +40,8 @@ def decrypt(message, alphabet, seed):
 
 def test():
     encryption = encrypt(TEST_MESSAGE, k_alphabet, "Котики")
-    print(f"Encryption: {encryption}")
-    print(f"Decryption: {decrypt(encryption, k_alphabet, 'Котики')}")
-
-
+    print(f"Криптограмма: {encryption}")
+    print(f"Расшифровка: {decrypt(encryption, k_alphabet, 'Котики')}")
 
 
 if __name__ == "__main__":

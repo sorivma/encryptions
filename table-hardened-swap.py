@@ -3,10 +3,8 @@ from prettytable import PrettyTable
 from main import main_func
 
 INFO = """
-Ключом является последовательность целых положительных чисел, записанных через разделитель [-]
-Пример: 3-1-2
+//WORK IN PROGRESS
 """
-
 TEST_MESSAGE = "Экзамен представляет собой ответы на теоретические вопросы."
 
 
@@ -32,9 +30,9 @@ def encrypt(message, alphabet, seed):
     print(table)
 
     encryption = ""
-    for i in range(1, len(splt_seed) + 1):
-        for j in range(matrix_row_num):
-            encryption += lines[j][splt_seed.index(str(i))]
+    for index in splt_seed:
+        for i in range(matrix_row_num):
+            encryption += lines[i][int(index) - 1]
 
     return encryption
 
@@ -42,14 +40,19 @@ def encrypt(message, alphabet, seed):
 def decrypt(message, alphabet, seed):
     message = normalize_message(message, seed)
     splt_seed = seed.split("-")
+
     matrix_row_num = len(message) // len(splt_seed)
     lines = split_array(message, len(splt_seed))
 
     table = PrettyTable()
-    table.title = "Таблица простой перестановки с восстановленным порядком строк"
+    table.title = "Таблица простой перестановки (Зашифрованного сообщения с восстановленным порядком строк)"
     table.field_names = [i for i in range(matrix_row_num)]
 
-    reconstructed_table = [lines[int(label) - 1] for label in splt_seed]
+    reconstructed_table = [""] * len(splt_seed)
+    counter = 0
+    for label in splt_seed:
+        reconstructed_table[int(label) - 1] = lines[counter]
+        counter += 1
 
     for line in reconstructed_table:
         table.add_row(line)

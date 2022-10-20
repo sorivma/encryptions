@@ -2,28 +2,25 @@ from alphabets import *
 
 
 def read_message():
-    message = input("Input your message: ")
-    seed = input("Input your seed: ")
+    message = input("Введите сообщение: ")
+    seed = input("Введите ключ: ")
     return message, seed
 
 
 def main_func(encryption_fun, decryption_fun, test, info):
     alphabet = k_alphabet
     while True:
-        command = input("""type -help for help
+        command = input("""Введите -help для справки
         """)
         if command == "-help":
 
             print("""
-            -encrypt stands for encrypting a message
-            -decrypt stands for decrypting a message
-            -try stands for encrypting and decrypting a message
-            -stop stands for stopping an application
-            -ca stands for changing an alphabet
-            -ra sta nds for changing an alphabet back to default
-            -info stands for brief cipher info
-            -test initializes test case
-            -al stands for showing current alphabet
+            -encrypt - Зашифровать сообщение
+            -decrypt - Расшифровать сообщение
+            -try - Зашифровать и расшифровать сообщение
+            -stop - Выход из приложения
+            -test - Зашифровать и расшифровать тестовое сообщение
+            -al - Просмотреть алфавит
             """)
 
         elif command in ["-encrypt", "-decrypt", "-try"]:
@@ -31,27 +28,32 @@ def main_func(encryption_fun, decryption_fun, test, info):
             try:
                 if command == "-encrypt":
                     result = encryption_fun(message, alphabet, seed)
-                    print("Encrypted message: " + result)
+                    print("Зашифрованное сообщение: " + result)
                 elif command == "-decrypt":
                     result = decryption_fun(message, alphabet, seed)
-                    print("Decrypted message: " + result)
+                    print("Расшифрованное сообщение: " + result)
                 elif command == "-try":
                     encrypted_message = encryption_fun(message, alphabet, seed)
-                    print("Encrypted message: " + encrypted_message)
+                    print("Зашифрованное сообщение: " + encrypted_message)
 
                     decrypted_message = decryption_fun(encrypted_message, alphabet, seed)
-                    print("Decrypted message: " + decrypted_message)
+                    print("Расшифрованное сообщение: " + decrypted_message)
             except ValueError:
-                print("Incorrect symbol in line")
+                print("Некорректный символ в сообщении")
 
         elif command == "-stop":
             break
 
         elif command == "-ca":
-            alphabet = input("Insert your alphabet with [,] separator: ").split(',')
-
+            c_alphabet = input("Введите новый алфавит без пробелов через разделитель [,]: ").split(',')
+            if len(c_alphabet) == len(set([letter for letter in c_alphabet])):
+                alphabet = c_alphabet
+                print(f"Алфавит изменён на {alphabet}")
+            else:
+                print("Данный алфавит не допускает однозначной дешифровки, присутствуют повторяющиеся буквы")
         elif command == "-ra":
             alphabet = k_alphabet
+            print(f"Алфавит возвращён к исходному состоянию {alphabet}")
 
         elif command == "-info":
             print(info)
