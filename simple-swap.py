@@ -1,71 +1,76 @@
 from utils import split_array
 from prettytable import PrettyTable
-from main import main_func
 
 INFO = """
-Ключом является последовательность целых положительных чисел, записанных через разделитель [-]
-Пример: 3-1-2
+Ключом является последовательность целых положительных чисел, записанных без разделителей
+Пример: 312
 """
 
 TEST_MESSAGE = "Экзамен представляет собой ответы на теоретические вопросы."
 
 
-def normalize_message(message, seed):
-    normalized_message = message
-    while len(normalized_message) % len(seed.split("-")) != 0:
-        normalized_message += " "
-    return normalized_message
+def normalize_message(message, key):
+    while len(message) % len(key) != 0:
+        message += "#"
+    return message
 
 
-def encrypt(message, alphabet, seed):
-    message = normalize_message(message, seed)
-    splt_seed = seed.split("-")
-    matrix_row_num = len(message) // len(splt_seed)
-    lines = split_array(message, matrix_row_num)
+def encrypt(message: str, alphabet, key: str):
+    key = key.split("-")
+    col_number = len(key)
 
-    table = PrettyTable()
-    table.title = "Таблица простой перестановки"
-    table.field_names = splt_seed
+    if len(message) % col_number == 0:
+        row_number = len(message) // col_number
+    else:
+        row_number = len(message) // col_number + 1
 
-    for line in lines:
-        table.add_row(line)
-    print(table)
+    table = [""] * col_number
 
-    encryption = ""
-    for i in range(1, len(splt_seed) + 1):
-        for j in range(matrix_row_num):
-            encryption += lines[j][splt_seed.index(str(i))]
+    for i in range(len(message)):
+        table[i % col_number] += message[i]
 
-    return encryption
-
-
-def decrypt(message, alphabet, seed):
-    message = normalize_message(message, seed)
-    splt_seed = seed.split("-")
-    matrix_row_num = len(message) // len(splt_seed)
-    lines = split_array(message, len(splt_seed))
+    output = ""
+    for i in range(1, len(key) + 1):
+        table_index = key.index(str(i))
+        output += table[table_index]
 
     table = PrettyTable()
-    table.title = "Таблица простой перестановки с восстановленным порядком строк"
-    table.field_names = [i for i in range(matrix_row_num)]
-
-    reconstructed_table = [lines[int(label) - 1] for label in splt_seed]
-
-    for line in reconstructed_table:
-        table.add_row(line)
-
-    encryption = ""
-    for i in range(matrix_row_num):
-        for j in range(len(splt_seed)):
-            encryption += reconstructed_table[j][i]
-
+    table.title = "Таблица перестановки"
+    table.field_names = list(key)
+    rows = split_array(normalize_message(message, key), row_number)
+    for row in rows:
+        table.add_row(row)
     print(table)
 
-    return encryption.strip()
+    return output
+
+
+def decrypt(message: str, alphabet, key: str):
+    splt_key = key.split("-")
+    colum_num = len(splt_key)
+    colum_length = [0] * colum_num
+
+    for i in range(len(message)):
+        colum_length[i % colum_num] += 1
+
+    table = []
+    for ln in colum_length:
+        table.append([""] * ln)
+    counter = 0
+    for i in range(len(table)):
+        for j in range(len(table[i])):
+            table[i][j] = message[counter]
+            counter += 1
+    output = ""
+    for k in range(0, len(message)):
+        index = int(splt_key[k % colum_num])
+        print(index)
+        output += table[index - 1][k // colum_num]
+    return output
 
 
 def test():
-    seed = "8-9-7-5-6-4-2-3-1"
+    seed = "897564231"
     encryption = encrypt(TEST_MESSAGE, None, seed)
     print(f"Encryption : {encryption}")
     decryption = decrypt(encryption, None, seed)
@@ -73,4 +78,29 @@ def test():
 
 
 if __name__ == "__main__":
-    main_func(encrypt, decrypt, test, INFO)
+    print(
+        "Ключом является последовательность чисел, образованная перестановкой натурального ряда чисел (через разделитель -)"
+        "Прример: 1-2-3-4-")
+    key = input("Введите ключ: ")
+    message = input("Введите сообщение: ")
+    command = input("""Введите одну из команд
+    сооб - изменить сообщение
+    ключ - изменить ключ
+    заш - зашифровать сообщение
+    рас - расшифровать сообщение
+    вых - заврешить работу
+    Команда: """)
+    message_storage = ""
+    while (command != 'вых'):
+        if command == 'сооб':
+            message = input("Введите сообщение: ")
+        elif command == "ключ":
+            key = input(f"Введите ключ ( Используемный ключ: {key}): ")
+        elif command == "заш":
+            message_storage = encrypt(message, "", key)
+            print(message_storage)
+        elif command == "рас":
+            print(decrypt(message_storage, "", key))
+        else:
+            print("Такой команды нет")
+        command = input("Команда: ")

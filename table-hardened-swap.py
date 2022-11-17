@@ -8,72 +8,30 @@ INFO = """
 TEST_MESSAGE = "Экзамен представляет собой ответы на теоретические вопросы."
 
 
-def normalize_message(message, seed):
-    normalized_message = message
-    while len(normalized_message) % len(seed.split("-")) != 0:
-        normalized_message += " "
-    return normalized_message
+# 10,12-11,13-14,15
+def encrypt(message: str, key_1: str, key_2: str):
+    col_num = len(key_1.split("-"))
+    splt_key = key_1.split("-")
+    pos_key_arr = key_2.split("-")
+    msg_list = list(message)
+    for k in range(0, len(splt_key)):
+        j = int(pos_key_arr[k].split(",")[1])
+        i = int(pos_key_arr[k].split(",")[0])
+        index = j + col_num * i
+        print(index)
+        msg_list.insert(index, '*')
 
+    if len(message) % col_num == 0:
+        row = len(message) // col_num
+    else:
+        row = len(message) // col_num + 1
 
-def encrypt(message, alphabet, seed):
-    message = normalize_message(message, seed)
-    splt_seed = seed.split("-")
-    matrix_row_num = len(message) // len(splt_seed)
-    lines = split_array(message, matrix_row_num)
+    table = [""] * col_num
+    for i in range(len(msg_list)):
+        table[i % col_num] += message[i]
 
-    table = PrettyTable()
-    table.title = "Таблица простой перестановки"
-    table.field_names = splt_seed
-
-    for line in lines:
-        table.add_row(line)
-    print(table)
-
-    encryption = ""
-    for index in splt_seed:
-        for i in range(matrix_row_num):
-            encryption += lines[i][int(index) - 1]
-
-    return encryption
-
-
-def decrypt(message, alphabet, seed):
-    message = normalize_message(message, seed)
-    splt_seed = seed.split("-")
-
-    matrix_row_num = len(message) // len(splt_seed)
-    lines = split_array(message, len(splt_seed))
-
-    table = PrettyTable()
-    table.title = "Таблица простой перестановки (Зашифрованного сообщения с восстановленным порядком строк)"
-    table.field_names = [i for i in range(matrix_row_num)]
-
-    reconstructed_table = [""] * len(splt_seed)
-    counter = 0
-    for label in splt_seed:
-        reconstructed_table[int(label) - 1] = lines[counter]
-        counter += 1
-
-    for line in reconstructed_table:
-        table.add_row(line)
-
-    encryption = ""
-    for i in range(matrix_row_num):
-        for j in range(len(splt_seed)):
-            encryption += reconstructed_table[j][i]
-
-    print(table)
-
-    return encryption.strip()
-
-
-def test():
-    seed = "8-9-7-5-6-4-2-3-1"
-    encryption = encrypt(TEST_MESSAGE, None, seed)
-    print(f"Encryption : {encryption}")
-    decryption = decrypt(encryption, None, seed)
-    print(f"Decryption : {decryption}")
-
-
-if __name__ == "__main__":
-    main_func(encrypt, decrypt, test, INFO)
+    output = ""
+    key_index = 0
+    for i in range(1, len(splt_key) + 1):
+        key_index = splt_key.index(str(i))
+        output += table[key_index]
