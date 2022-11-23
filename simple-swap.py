@@ -1,5 +1,4 @@
-from utils import split_array
-from prettytable import PrettyTable
+from tabulate import tabulate
 
 INFO = """
 Ключом является последовательность целых положительных чисел, записанных без разделителей
@@ -9,98 +8,59 @@ INFO = """
 TEST_MESSAGE = "Экзамен представляет собой ответы на теоретические вопросы."
 
 
-def normalize_message(message, key):
-    while len(message) % len(key) != 0:
-        message += "#"
-    return message
-
-
-def encrypt(message: str, alphabet, key: str):
-    key = key.split("-")
-    col_number = len(key)
-
-    if len(message) % col_number == 0:
-        row_number = len(message) // col_number
-    else:
-        row_number = len(message) // col_number + 1
-
-    table = [""] * col_number
-
-    for i in range(len(message)):
-        table[i % col_number] += message[i]
-
-    output = ""
-    for i in range(1, len(key) + 1):
-        table_index = key.index(str(i))
-        output += table[table_index]
-
-    table = PrettyTable()
-    table.title = "Таблица перестановки"
-    table.field_names = list(key)
-    rows = split_array(normalize_message(message, key), row_number)
-    for row in rows:
-        table.add_row(row)
-    print(table)
-
-    return output
-
-
-def decrypt(message: str, alphabet, key: str):
+def encrypt(message: str, key: str):
     splt_key = key.split("-")
-    colum_num = len(splt_key)
-    colum_length = [0] * colum_num
 
+    # Создаём массив колонок нашей таблицы и заполняем их в соответствии с ключом
+    cols = [""] * len(splt_key)
+    message_counter = 0
+    for letter in message:
+        cols[int(splt_key[message_counter % len(splt_key)]) - 1 % len(cols)] += letter
+        message_counter += 1
+
+    # Вычилсяем количество строк таблицы
+    if len(message) % len(splt_key) == 0:
+        row_len = len(message) // len(splt_key)
+    else:
+        row_len = len(message) // len(splt_key) + 1
+
+    # Переварачиваем стобцы в строки
+    rows = [""] * row_len
+    for number in splt_key:
+        row_counter = 0
+        for letter in cols[int(number) - 1]:
+            rows[row_counter] += letter
+            row_counter += 1
+
+    print(tabulate(rows, splt_key, tablefmt="outline"))
+
+    return "".join(cols)
+
+
+def decrypt(message: str, key: str):
+    splt_key = key.split("-")
+    inner_message = message
+
+    cols_l = [0] * len(splt_key)
     for i in range(len(message)):
-        colum_length[i % colum_num] += 1
+        cols_l[i % len(cols_l)] += 1
 
-    table = []
-    for ln in colum_length:
-        table.append([""] * ln)
-    counter = 0
-    for i in range(len(table)):
-        for j in range(len(table[i])):
-            table[i][j] = message[counter]
-            counter += 1
+    cols = [""] * len(splt_key)
+    for i in range(len(splt_key)):
+        j = 0
+        for j in range(cols_l[splt_key.index(str(i + 1))]):
+            cols[splt_key.index(str(i + 1))] += inner_message[j]
+        inner_message = inner_message[j + 1:]
+
     output = ""
-    for k in range(0, len(message)):
-        index = int(splt_key[k % colum_num])
-        print(index)
-        output += table[index - 1][k // colum_num]
+    for j in range(len(cols[0])):
+        for i in range(len(cols)):
+            try:
+                output += cols[i][j]
+            except IndexError:
+                pass
     return output
-
-
-def test():
-    seed = "897564231"
-    encryption = encrypt(TEST_MESSAGE, None, seed)
-    print(f"Encryption : {encryption}")
-    decryption = decrypt(encryption, None, seed)
-    print(f"Decryption : {decryption}")
 
 
 if __name__ == "__main__":
-    print(
-        "Ключом является последовательность чисел, образованная перестановкой натурального ряда чисел (через разделитель -)"
-        "Прример: 1-2-3-4-")
-    key = input("Введите ключ: ")
-    message = input("Введите сообщение: ")
-    command = input("""Введите одну из команд
-    сооб - изменить сообщение
-    ключ - изменить ключ
-    заш - зашифровать сообщение
-    рас - расшифровать сообщение
-    вых - заврешить работу
-    Команда: """)
-    message_storage = ""
-    while (command != 'вых'):
-        if command == 'сооб':
-            message = input("Введите сообщение: ")
-        elif command == "ключ":
-            key = input(f"Введите ключ ( Используемный ключ: {key}): ")
-        elif command == "заш":
-            message_storage = encrypt(message, "", key)
-            print(message_storage)
-        elif command == "рас":
-            print(decrypt(message_storage, "", key))
-        else:
-            print("Такой команды нет")
-        command = input("Команда: ")
+    print()
